@@ -29,5 +29,4 @@ use Mix.Config
 #
 #     import_config "#{Mix.env()}.exs"
 
-config :mnesia,
-  dir: '.mnesia/#{Mix.env}/#{node()}'
+config :tetris99, max_players: 2

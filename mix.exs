@@ -13,9 +13,17 @@ defmodule Tetris99.MixProject do
 
   # Run "mix help compile.app" to learn about applications.
   def application do
+    any_env = [:logger]
+
+    extra_apps =
+      case Mix.env() do
+        :dev -> any_env ++ [:remix]
+        _ -> any_env
+      end
+
     [
       mod: {Tetris99, []},
-      extra_applications: [:logger]
+      extra_applications: extra_apps
     ]
   end
 
@@ -26,7 +34,7 @@ defmodule Tetris99.MixProject do
       {:plug, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:poison, "~> 3.1"},
-      {:memento, "~> 0.2.1"}
+      {:remix, "~> 0.0.1", only: :dev}
     ]
   end
 end
