@@ -1,14 +1,16 @@
-defmodule Tetris99.Lobby do
+defmodule Tetris99.Lobby.Server do
   use GenServer
 
   require Logger
 
-  alias Tetris99.{Player, Lobby}
-
   @max_players Application.get_env(:tetris99, :max_players)
 
-  def start_link(lobby_name) do
-    GenServer.start_link(__MODULE__, lobby_name)
+  def start_link(name) do
+    GenServer.start_link(__MODULE__, name, name: via_tuple(name))
+  end
+
+  defp via_tuple(lobby_name) do
+    {:via, Registry, {Tetris99.Lobby.Registry, lobby_name, lobby_name}}
   end
 
   def add_player(lobby_pid, player) do
@@ -29,7 +31,8 @@ defmodule Tetris99.Lobby do
 
   # Genserver callback methods
   def init(lobby_name) do
-    {:ok, %{name: lobby_name}}
+    Logger.debug("Started lobby: #{lobby_name}")
+    {:ok, %{name: lobby_name, players: []}}
   end
 
   def handle_call({:get_name}, _from, state) do
@@ -43,14 +46,14 @@ defmodule Tetris99.Lobby do
     {:reply, players, state}
   end
 
-  def handle_call({:add_player, player}, _from, state) do
+  def handle_call({:add_player, _player}, _from, state) do
     %{name: name} = state
     player_count = Lobby.Registry |> Registry.count_match(name, {:_})
 
     case player_count do
       n when n < @max_players ->
         Logger.debug("Is not full")
-        player |> Player.join(self())
+        # player |> Player.join(self())
         {:reply, :ok, state}
 
       n ->

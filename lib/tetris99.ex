@@ -3,17 +3,14 @@ defmodule Tetris99 do
   require Logger
 
   def start(_type, _args) do
-    import Supervisor.Spec
-
     children = [
-      worker(Tetris99.Web.Server, []),
-      worker(Tetris99.Lobby.Registry, [])
+      {Registry, keys: :unique, name: Tetris99.Lobby.Registry},
+      {Registry, keys: :duplicate, name: Tetris99.Lobby.Players},
+      {Tetris99.Web.Server, []},
+      {Tetris99.Lobby.Supervisor, []}
     ]
 
     opts = [strategy: :one_for_one, name: Tetris99.Supervisor]
-    pid = Supervisor.start_link(children, opts)
-    Logger.info("Application started")
-
-    pid
+    Supervisor.start_link(children, opts)
   end
 end
