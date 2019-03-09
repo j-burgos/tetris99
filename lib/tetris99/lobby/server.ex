@@ -1,6 +1,5 @@
 defmodule Tetris99.Lobby.Server do
   use GenServer
-
   require Logger
 
   @max_players Application.get_env(:tetris99, :max_players)
