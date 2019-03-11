@@ -4,9 +4,9 @@ defmodule Tetris99 do
 
   def start(_type, _args) do
     children = [
-      {Tetris99.Lobby.Registry, []},
-      {Tetris99.Player.Registry, []},
-      {Tetris99.Web.Server, []},
+      {Registry, [keys: :unique, name: Tetris99.Lobby.Registry]},
+      {Registry, [keys: :duplicate, name: Tetris99.Player.Registry]},
+      # {Tetris99.Web.Server, []},
       {Tetris99.Lobby.Supervisor, []}
     ]
 

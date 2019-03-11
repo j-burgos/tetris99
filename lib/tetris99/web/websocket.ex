@@ -17,25 +17,15 @@ defmodule Tetris99.Web.WebSocket do
 
   def websocket_handle({:text, message}, state) do
     decode_result = Poison.decode(message)
-
-    case decode_result do
-      {:ok, json} ->
-        websocket_handle({:json, json}, state)
-
-      msg ->
-        websocket_handle({:unknown, msg}, state)
-    end
+    websocket_handle({:json, decode_result}, state)
   end
 
   def websocket_handle({:json, message}, state) do
     case message do
       %{"action" => "join", "player" => player} ->
-        # Registry
-        # {:ok, pid} = Player.start_link(player)
         Logger.info("#{player} joined")
         resp = %{player: player}
         json = Poison.encode!(resp)
-        # new_state = %{state | player_pid: pid}
         {:reply, {:text, json}, state}
 
       %{"action" => "leave", "player" => player} ->
