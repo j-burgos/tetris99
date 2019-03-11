@@ -17,7 +17,8 @@ defmodule Tetris99.Web.WebSocket do
 
   def websocket_handle({:text, message}, state) do
     decode_result = Poison.decode(message)
-    websocket_handle({:json, decode_result}, state)
+    {:ok, message} = decode_result
+    websocket_handle({:json, message}, state)
   end
 
   def websocket_handle({:json, message}, state) do
