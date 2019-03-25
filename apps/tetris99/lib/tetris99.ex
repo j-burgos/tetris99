@@ -1,4 +1,4 @@
-defmodule Tetris99 do
+defmodule Tetris99.Application do
   use Application
   require Logger
 
@@ -6,7 +6,6 @@ defmodule Tetris99 do
     children = [
       {Registry, [keys: :unique, name: Tetris99.Lobby.Registry]},
       {Registry, [keys: :duplicate, name: Tetris99.Player.Registry]},
-      {Tetris99.Web.Server, []},
       {Tetris99.Lobby.Supervisor, []}
     ]
 
