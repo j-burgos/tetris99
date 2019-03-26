@@ -25,6 +25,7 @@ defmodule Tetris99.Web.WebSocket do
     case message do
       %{"action" => "join", "player" => player} ->
         Logger.info("#{player} joined")
+        {:ok, _pid} = Tetris99.Player.Server.start_link(player)
         resp = %{player: player}
         json = Poison.encode!(resp)
         {:reply, {:text, json}, state}

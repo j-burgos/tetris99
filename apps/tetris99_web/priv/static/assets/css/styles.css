@@ -1,0 +1,28 @@
+.hidden {
+  display: none;
+}
+
+.sidebar {
+  display: flex;
+  background-color: #5AB;
+  height: 100vh;
+}
+
+.sidebar .header {
+  text-align: center;
+  margin: 6em auto;
+  color: #fff;
+}
+
+.sidebar .header h1 {
+  text-transform: uppercase;
+}
+
+.content {
+  display: flex;
+  height: 100vh;
+}
+
+.content .login-form {
+  margin: auto;
+}

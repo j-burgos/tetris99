@@ -1,4 +1,4 @@
-const MapServer = ws => {
+const ChatService = ws => {
   const join = ws => player => {
     console.log(`Joining map as: ${player}`);
     const message = JSON.stringify({ action: 'join', player });
@@ -9,16 +9,10 @@ const MapServer = ws => {
     const message = JSON.stringify({ action: 'leave', player });
     ws.send(message);
   };
-  const move = ws => (player, position) => {
-    console.log(`Moving to position ${position}`);
-    const message = JSON.stringify({ action: 'move', player, position });
-    ws.send(message);
-  };
 
   return {
     join: join(ws),
     leave: leave(ws),
-    move: move(ws),
   };
 };
 
@@ -37,6 +31,6 @@ const ConnectionBuilder = (url, messageHandler) => {
 };
 
 export {
-  MapServer,
+  ChatService,
   ConnectionBuilder,
 };

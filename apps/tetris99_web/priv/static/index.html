@@ -1,18 +1,50 @@
 <html>
+  <head>
+    <title>Distributed Chat</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/purecss@1.0.0/build/pure-min.css"
+      integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="/public/css/styles.css" />
+  </head>
 
-<head>
-  <title>Distributed Map</title>
-</head>
+  <body>
+    <div id="login-page" class="pure-g">
+      <div class="sidebar pure-u-1-3">
+        <div class="header">
+          <h1>Distributed</h1>
+          <h2>Chat</h2>
+        </div>
+      </div>
+      <div class="content pure-u-2-3">
+        <form id="player-join" class="pure-form pure-form-stacked login-form">
+          <fieldset>
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" required />
+            </br>
+            <div class="pure-controls">
+              <input
+                class="pure-button pure-input-1 pure-button-primary"
+                type="submit"
+                value="Join"
+              />
+            </div>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+    <div id="chat-page" class="pure-g hidden">
+      <div class="pure-u-1-3">
+        <div class="sidebar pure-u-1-3">
 
-<body>
-  <form id="player-join">
-    Username:
-    <input name="username" type="text">
-    <br>
-    <input type="submit" value="Join">
-  </form>
-
-  <script type="module" src="/public/js/index.js"></script>
-</body>
-
+        </div>
+      </div>
+      <div class="pure-u-2-3">
+        asdasd
+      </div>
+    </div>
+    <script type="module" src="/public/js/index.js"></script>
+  </body>
 </html>

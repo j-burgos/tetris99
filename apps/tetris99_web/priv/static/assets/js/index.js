@@ -1,7 +1,7 @@
-import { ConnectionBuilder, MapServer } from './map-server-connection.js';
+import { ConnectionBuilder, ChatService } from './chat-service.js';
 
 const connection = ConnectionBuilder('ws://localhost:5000/game');
-const mapServer = MapServer(connection);
+const chatService = ChatService(connection);
 
 const getFormData = formElement => {
   const formData = new FormData(formElement);
@@ -17,5 +17,9 @@ const joinForm = document.getElementById(joinFormElementId);
 joinForm.onsubmit = e => {
   e.preventDefault();
   const { username } = getFormData(joinForm);
-  mapServer.join(username);
+  chatService.join(username);
+  const loginPage = document.getElementById('login-page');
+  const chatPage = document.getElementById('chat-page');
+  loginPage.classList.add('hidden');
+  chatPage.classList.remove('hidden');
 };
