@@ -8,7 +8,7 @@ defmodule Tetris99.Web.WebSocket do
   end
 
   def websocket_init(_init_args) do
-    {:ok, %{player_pid: nil}}
+    {:ok, %{user: nil}}
   end
 
   def websocket_handle({:unknown, message}, state) do
@@ -26,10 +26,12 @@ defmodule Tetris99.Web.WebSocket do
     case message do
       %{"action" => "join", "player" => player} ->
         Logger.info("#{player} joined")
-        player |> Chat.User.Supervisor.join_lobby
+
+        player |> Chat.User.Supervisor.start_user()
+
         resp = %{player: player}
         json = Poison.encode!(resp)
-        {:reply, {:text, json}, state}
+        {:reply, {:text, json}, %{state | user: player}}
 
       %{"action" => "leave", "player" => player} ->
         Logger.info("#{player} left")
@@ -44,9 +46,15 @@ defmodule Tetris99.Web.WebSocket do
     {:ok, state}
   end
 
-  def terminate(reason, _req, _state) do
-    # Tetris99.Lobby.Registry.leave(self())
+  def terminate(reason, _req, state) do
+    %{user: user} = state
+    conns = Chat.User.Supervisor.get_connections(user)
     Logger.debug("Connection terminated #{inspect(reason)}")
+
+    if length(conns) == 1 do
+      Chat.User.Supervisor.stop(user)
+    end
+
     :ok
   end
 end

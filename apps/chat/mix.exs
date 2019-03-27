@@ -10,7 +10,7 @@ defmodule Chat.Mixfile do
       build_path: "../../_build",
       config_path: "../../config/config.exs",
       deps_path: "../../deps",
-      start_permanent: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod
     ]
   end
 

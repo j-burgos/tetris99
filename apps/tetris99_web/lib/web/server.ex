@@ -11,7 +11,7 @@ defmodule Tetris99.Web.Server do
         scheme: :http,
         plug: Tetris99.Web.Routes,
         options: [
-          port: 5000,
+          port: System.get_env("PORT") |> String.to_integer(),
           dispatch: dispatch()
         ]
       )

@@ -3,10 +3,13 @@ defmodule Chat.Application do
   require Logger
 
   def start(_type, _args) do
+    nodes = Application.get_env(:chat, :nodes)
+
     children = [
-      {Registry, [keys: :unique, name: Chat.Room.Registry]},
-      {Registry, [keys: :duplicate, name: Chat.UserPresence.Registry]},
       {Chat.Room.Supervisor, []},
+      {Chat.User.Supervisor, []},
+      {Chat.Distribution, nodes},
+      {Chat.Room.Server, "default-room"}
     ]
 
     opts = [strategy: :one_for_one, name: Chat.Supervisor]

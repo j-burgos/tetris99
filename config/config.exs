@@ -29,4 +29,10 @@ use Mix.Config
 #
 #     import_config "#{Mix.env()}.exs"
 
-config :tetris99, max_players: 2
+# config :tetris99, max_players: 2
+
+config :chat,
+  nodes: [
+    :"node1@127.0.0.1",
+    :"node2@127.0.0.1"
+  ]

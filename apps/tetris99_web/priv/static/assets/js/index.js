@@ -1,6 +1,7 @@
 import { ConnectionBuilder, ChatService } from './chat-service.js';
 
-const connection = ConnectionBuilder('ws://localhost:5000/game');
+const port = window.location.port;
+const connection = ConnectionBuilder(`ws://localhost:${port}/game`);
 const chatService = ChatService(connection);
 
 const getFormData = formElement => {
