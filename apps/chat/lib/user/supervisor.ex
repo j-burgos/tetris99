@@ -1,19 +1,13 @@
 defmodule Chat.User.Supervisor do
-  use DynamicSupervisor
-
   require Logger
 
-  @sup_name __MODULE__
+  @main "default-channel"
 
-  def start_link(_init_arg) do
-    @sup_name |> DynamicSupervisor.start_link([], name: @sup_name)
+  def join_room(user, room) do
+    Chat.UserPresence.Registry |> Registry.register(room, user)
   end
 
-  def start_user(name) do
-    @sup_name |> DynamicSupervisor.start_child({Chat.User.Agent, name})
-  end
-
-  def init(_) do
-    DynamicSupervisor.init(strategy: :one_for_one)
+  def join_lobby(user) do
+    user |> join_room(@main)
   end
 end

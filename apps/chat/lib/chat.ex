@@ -5,10 +5,8 @@ defmodule Chat.Application do
   def start(_type, _args) do
     children = [
       {Registry, [keys: :unique, name: Chat.Room.Registry]},
-      {Registry, [keys: :unique, name: Chat.User.Registry]},
       {Registry, [keys: :duplicate, name: Chat.UserPresence.Registry]},
       {Chat.Room.Supervisor, []},
-      {Chat.User.Supervisor, []}
     ]
 
     opts = [strategy: :one_for_one, name: Chat.Supervisor]

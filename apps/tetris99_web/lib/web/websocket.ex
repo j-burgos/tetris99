@@ -26,12 +26,7 @@ defmodule Tetris99.Web.WebSocket do
     case message do
       %{"action" => "join", "player" => player} ->
         Logger.info("#{player} joined")
-
-        case Chat.User.Supervisor.start_user(player) do
-          {:ok, _pid} -> Logger.debug("Created user")
-          {:error, {:already_started, _pid}} -> Logger.debug("Already created")
-        end
-
+        player |> Chat.User.Supervisor.join_lobby
         resp = %{player: player}
         json = Poison.encode!(resp)
         {:reply, {:text, json}, state}
