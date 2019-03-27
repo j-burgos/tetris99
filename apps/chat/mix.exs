@@ -1,9 +1,9 @@
-defmodule Tetris99.Web.Mixfile do
+defmodule Chat.Mixfile do
   use Mix.Project
 
   def project do
     [
-      app: :tetris99_web,
+      app: :chat,
       version: "0.1.0",
       deps: deps(),
       elixir: "~> 1.8",
@@ -16,20 +16,24 @@ defmodule Tetris99.Web.Mixfile do
 
   # Run "mix help compile.app" to learn about applications.
   def application do
+    any_env = [:logger]
+
+    extra_apps =
+      case Mix.env() do
+        :dev -> any_env ++ [:remix]
+        _ -> any_env
+      end
+
     [
-      mod: {Tetris99.Web.Application, []},
-      extra_applications: [:logger, :chat]
+      mod: {Chat.Application, []},
+      extra_applications: extra_apps
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:cowboy, "~> 2.0"},
-      {:plug, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"},
-      {:poison, "~> 3.1"},
-      {:chat, in_umbrella: true}
+      {:remix, "~> 0.0.1", only: :dev}
     ]
   end
 end

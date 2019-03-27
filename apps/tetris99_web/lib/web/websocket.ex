@@ -3,7 +3,8 @@ defmodule Tetris99.Web.WebSocket do
 
   @behaviour :cowboy_websocket
   def init(req, state) do
-    {:cowboy_websocket, req, state}
+    opts = %{:idle_timeout => 60000 * 5}
+    {:cowboy_websocket, req, state, opts}
   end
 
   def websocket_init(_init_args) do
@@ -25,7 +26,12 @@ defmodule Tetris99.Web.WebSocket do
     case message do
       %{"action" => "join", "player" => player} ->
         Logger.info("#{player} joined")
-        {:ok, _pid} = Tetris99.Player.Server.start_link(player)
+
+        case Chat.User.Supervisor.start_user(player) do
+          {:ok, _pid} -> Logger.debug("Created user")
+          {:error, {:already_started, _pid}} -> Logger.debug("Already created")
+        end
+
         resp = %{player: player}
         json = Poison.encode!(resp)
         {:reply, {:text, json}, state}

@@ -12,9 +12,6 @@ defmodule Tetris99.Web.Server do
         plug: Tetris99.Web.Routes,
         options: [
           port: 5000,
-          protocol_options: [
-            {:idle_timeout, :infinity}
-          ],
           dispatch: dispatch()
         ]
       )
