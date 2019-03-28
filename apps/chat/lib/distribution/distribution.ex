@@ -16,9 +16,29 @@ defmodule Chat.Distribution do
     GenServer.cast(@name, {:reconnect, setting})
   end
 
+  def get_connections(user) do
+    GenServer.call(@name, {:connections, user})
+  end
+
+  def broadcast(user, message) do
+    GenServer.cast(@name, {:broadcast, user, message})
+  end
+
   def init(nodes) do
     nodes_with_status = connect(nodes)
     {:ok, %{nodes: nodes_with_status, reconnect: true}}
+  end
+
+  def handle_call({:connections, user}, _from, state) do
+    %{nodes: nodes} = state
+
+    conns =
+      nodes
+      |> Enum.map(fn {node, _} ->
+        node |> :rpc.call(Chat.User.Supervisor, :get_connections, [user], 1000)
+      end)
+
+    {:reply, conns, state}
   end
 
   def handle_cast({:retry, node}, state) do
@@ -51,6 +71,21 @@ defmodule Chat.Distribution do
       end
 
     {:noreply, %{state | nodes: new_nodes, reconnect: setting}}
+  end
+
+  def handle_cast({:broadcast, user, message}, state) do
+    %{nodes: nodes, reconnect: reconnect} = state
+
+    nodes
+    |> Enum.map(fn {node, _} -> node end)
+    |> Enum.uniq()
+    |> Enum.each(fn node ->
+      if node() != node && reconnect do
+        node |> :rpc.cast(Chat.Room.Supervisor, :broadcast, [user, message])
+      end
+    end)
+
+    {:noreply, state}
   end
 
   def handle_info(msg, state) do

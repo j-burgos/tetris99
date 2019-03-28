@@ -30,6 +30,7 @@ defmodule Chat.User.Server do
 
     if keys |> Enum.all?(fn k -> k != room end) do
       @presence_reg |> Registry.register(room, name)
+      Chat.User.Supervisor.show_connected_to_users(name)
     end
 
     {:reply, :ok, state}

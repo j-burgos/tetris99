@@ -29,9 +29,19 @@ defmodule Tetris99.Web.WebSocket do
 
         player |> Chat.User.Supervisor.start_user()
 
-        resp = %{player: player}
+        connected_users =
+          Chat.Room.Supervisor.get_connected_users("default-channel")
+          |> Enum.map(fn {_, u} -> u end)
+
+        resp = %{player: player, connected_users: connected_users}
         json = Poison.encode!(resp)
         {:reply, {:text, json}, %{state | user: player}}
+
+      %{"action" => "broadcast", "message" => bmessage} ->
+        %{user: user} = state
+        Chat.Room.Supervisor.broadcast(user, bmessage)
+        Chat.Distribution.broadcast(user, bmessage)
+        {:reply, {:text, "ok"}, state}
 
       %{"action" => "leave", "player" => player} ->
         Logger.info("#{player} left")
@@ -42,8 +52,8 @@ defmodule Tetris99.Web.WebSocket do
   end
 
   def websocket_info(info, state) do
-    Logger.debug("Handle info #{inspect(info)} #{inspect(state)}")
-    {:ok, state}
+    Logger.debug("Handle info #{inspect(info)}")
+    {:reply, {:text, info}, state}
   end
 
   def terminate(reason, _req, state) do
@@ -53,6 +63,7 @@ defmodule Tetris99.Web.WebSocket do
 
     if length(conns) == 1 do
       Chat.User.Supervisor.stop(user)
+      Chat.User.Supervisor.show_connected_to_users(user, :disconnected)
     end
 
     :ok

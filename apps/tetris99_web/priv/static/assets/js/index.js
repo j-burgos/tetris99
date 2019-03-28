@@ -24,3 +24,12 @@ joinForm.onsubmit = e => {
   loginPage.classList.add('hidden');
   chatPage.classList.remove('hidden');
 };
+
+const sendMessageElementId = 'send-message';
+const sendMessageForm = document.getElementById(sendMessageElementId);
+sendMessageForm.onsubmit = e => {
+  e.preventDefault();
+  const { message } = getFormData(sendMessageForm);
+  chatService.sendMessage(message);
+  document.getElementById('message').value = '';
+};

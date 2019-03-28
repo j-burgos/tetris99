@@ -14,17 +14,57 @@ defmodule Chat.User.Supervisor do
 
   def start_user(name) do
     r = @sup_name |> DynamicSupervisor.start_child({Chat.User.Server, name})
+    @conn_reg |> Registry.register(name, "websocket")
 
     case r do
       {:error, {:already_started, pid}} ->
         {:ok, pid}
 
       {:ok, _pid} ->
-        @conn_reg |> Registry.register(name, "websocket")
         name |> join_room(@default_channel)
-        Chat.Distribution.replicate_users([name])
+
+        users =
+          Chat.Room.Supervisor.get_connected_users("default-channel")
+          |> Enum.map(fn {_, u} -> u end)
+
+        Chat.Distribution.replicate_users(users)
+
         r
     end
+  end
+
+  def show_connected(user, connected_user, status) do
+    @conn_reg
+    |> Registry.dispatch(user, fn conns ->
+      Logger.debug("#{inspect(conns)}")
+
+      conns
+      |> Enum.each(fn {conn, _} ->
+        payload =
+          if status === :connected do
+            %{"user:connected" => connected_user}
+          else
+            %{"user:disconnected" => connected_user}
+          end
+
+        msg = Poison.encode!(payload)
+        Logger.debug("#{inspect(msg)} to #{inspect(conn)}")
+        conn |> Process.send(msg, [])
+      end)
+    end)
+  end
+
+  def show_connected_to_users(name, status \\ :connected) do
+    @presence_reg
+    |> Registry.dispatch(@default_channel, fn entries ->
+      entries
+      |> Enum.each(fn {_, username} ->
+        if username != name do
+          Logger.debug("Show to #{username} that #{name} connected")
+          username |> show_connected(name, status)
+        end
+      end)
+    end)
   end
 
   def get_pid(user) do
